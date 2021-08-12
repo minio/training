@@ -9,7 +9,7 @@ The included examples are a subset of those in the upstream AWS repository, and 
 operations of PUT, GET, LIST, and DELETE. 
 
 All code herein retains the license and copyright headers from the original repository.
-We have added
+We have added comments to note which files and specific portions of the file have been modified.
 
 ## Running the Examples
 Before using the code examples, first complete the installation and setup steps of [Getting Started](https://docs.aws.amazon.com/sdk-for-cpp/v1/developer-guide/getting-started.html) in the AWS SDK for C++ Developer Guide.
