@@ -17,15 +17,15 @@ def main():
     #client = minio_client()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--bucket", help="The name of the bucket")
-    parser.add_argument("--object_name",help="The name of the object")
-    parser.add_argument("--http_action",help="Specify PUT for put, DELETE for delete, or GET for get. Defaults to GET")
+    parser.add_argument("--bucket",      help="The name of the bucket")
+    parser.add_argument("--object_name", help="The name of the object")
+    parser.add_argument("--http_action", help="Specify PUT for put, DELETE for delete, or GET for get. Defaults to GET")
 
     args = parser.parse_args()
 
-    bucket_name = args.bucket if args.bucket else "training"
-    object_name = args.object_name if args.object_name else "my-file.txt"
-    http_action = args.http_action if args.http_action else "GET"
+    bucket_name = args.bucket      or "training"
+    object_name = args.object_name or "my-file.txt"
+    http_action = args.http_action or "GET"
 
     if http_action == "GET":
         try:
@@ -34,7 +34,7 @@ def main():
         except S3Error as err:
             print("Error generating presigned URL: \n\t{0}".format(err))
 
-    elif http_action == "DELETE":
+    if http_action == "DELETE":
         try:
             url = client.get_presigned_url(http_action, bucket_name, object_name, expires=timedelta(days=1))
             print("Presigned DELETE URL is {0}, expires in 7 days".format(url))

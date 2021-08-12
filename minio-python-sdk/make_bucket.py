@@ -16,15 +16,15 @@ def main():
     #client = minio_client()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--bucket", help="The name of the bucket into which we write the object")
-    parser.add_argument("--locking",help="Enable Bucking WORM Locking")
+    parser.add_argument("--bucket",  help="The name of the bucket into which we write the object")
+    parser.add_argument("--locking", help="Enable Bucking WORM Locking")
 
     args = parser.parse_args()
 
     # Populate the core requirements for make_bucket
 
-    bucket_name = args.bucket if args.bucket else "training"
-    locking = args.locking if args.locking else False
+    bucket_name = args.bucket  or "training"
+    locking     = args.locking or False
 
     # Use bucket_exists to see if the bucket already exists and exit if true
 
@@ -33,12 +33,11 @@ def main():
         return
 
     try:
-        if locking:
-            client.make_bucket(bucket_name,object_lock=True)
-            print("Created Bucket {0} with locking enabled".format(bucket_name))
-        else:
-            client.make_bucket(bucket_name)
-            print("Created Bucket {0}".format(bucket_name))
+        client.make_bucket(bucket_name,object_lock=locking)
+        print("Created Bucket {0} {1}".format(
+                bucket_name,
+                "with locking enabled" if locking else ""
+        ))
     except S3Error as err:
         print("Error on creating bucket: \n\t{0}".format(err))
     

@@ -13,20 +13,20 @@ def main():
     )
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--bucket", help="The name of the bucket into which we write the object")
-    parser.add_argument("--object_name",help="The name of the object")
+    parser.add_argument("--bucket",      help="The name of the bucket into which we write the object")
+    parser.add_argument("--object_name", help="The name of the object")
 
     args = parser.parse_args()
 
-    bucket_name = args.bucket if args.bucket else "training"
-    object_name = args.object_name if args.object_name else "nyc_public_art.csv"
+    bucket_name = args.bucket      or "training"
+    object_name = args.object_name or "nyc_public_art.csv"
 
     try:
         with client.select_object_content(
                 bucket_name, 
                 object_name, 
                 SelectRequest(
-                    "select s.\"name\",s.\"artist\",s.\"active\" from S3Object s limit 10", 
+                    'select s."name",s."artist",s."active" from S3Object s limit 10', 
                     CSVInputSerialization(file_header_info="USE"), 
                     CSVOutputSerialization(),
                     request_progress=True)

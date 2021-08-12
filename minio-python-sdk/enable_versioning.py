@@ -1,6 +1,7 @@
-from minio.versioningconfig import VersioningConfig
+from minio.versioningconfig import VersioningConfig, OFF, SUSPENDED
 import argparse
 from minio.error import S3Error
+from minio import commonconfig
 from client_constructor import minio_client, minio_play_client
 
 def main():
@@ -23,7 +24,7 @@ def main():
 
     # Populate the core requirement for get_bucket_versioning and set_bucket_versioning
 
-    bucket_name = args.bucket if args.bucket else "training"
+    bucket_name = args.bucket or "training"
 
     if not client.bucket_exists(bucket_name):        
         print("Bucket {0} does not exist on {1}".format(bucket_name, client._base_url.host))
@@ -39,24 +40,24 @@ def main():
     #   Enabled -> Suspended
     #   Suspended -> Enabled
 
-    if version_status == "Off":
+    if version_status == OFF:
         try:
             print("Enabling versioning on bucket")
-            client.set_bucket_versioning(bucket_name, VersioningConfig("Enabled"))
+            client.set_bucket_versioning(bucket_name, VersioningConfig())
         except S3Error as err:
             print("Error on enabling versioning on bucket: \n\t{0}".format(err))
     
-    elif version_status == "Enabled":
+    elif version_status == commonconfig.ENABLED:
         try:
             print("Suspending versioning on bucket")
-            client.set_bucket_versioning(bucket_name, VersioningConfig("Suspended"))
+            client.set_bucket_versioning(bucket_name, VersioningConfig(SUSPENDED))
         except S3Error as err:
             print("Error on suspending versioning on bucket: \n\t{0}".format(err))
 
-    elif version_status == "Suspended":
+    elif version_status == SUSPENDED:
         try:
             print("Re-enabling versioning on bucket")
-            client.set_bucket_versioning(bucket_name, VersioningConfig("Enabled"))
+            client.set_bucket_versioning(bucket_name, VersioningConfig(commonconfig.ENABLED))
         except S3Error as err:
             print("Error on enabling versioning on bucket: \n\t{0}".format(err))
 

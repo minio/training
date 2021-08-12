@@ -16,17 +16,17 @@ def main():
     #client = minio_client()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--bucket", help="The name of the bucket into which we write the object")
-    parser.add_argument("--object_path",help="The path to the object. Specify a local or full filesystem path")
-    parser.add_argument("--object_name",help="The name of the object")
+    parser.add_argument("--bucket",      help="The name of the bucket into which we write the object")
+    parser.add_argument("--object_path", help="The path to the object. Specify a local or full filesystem path")
+    parser.add_argument("--object_name", help="The name of the object")
 
     args = parser.parse_args()
 
     # Populate the core requirements for fputobject:
 
-    bucket_name = args.bucket if args.bucket else "training"
-    object_name = args.object_name if args.object_name else "my-file.txt"
-    object_path = args.object_path if args.object_path else "my-file.txt"
+    bucket_name = args.bucket      or "training"
+    object_name = args.object_name or "my-file.txt"
+    object_path = args.object_path or "my-file.txt"
 
     print("Writing object {0} to {1}/{2}".format(object_path, object_name, bucket_name))
 
@@ -40,7 +40,11 @@ def main():
             file_path=object_path
         )
 
-        print("Wrote object to: {0}/{1}".format(result.bucket_name,result.object_name))
+        print("Wrote object to: {0}/{1} {2}".format(
+            result.bucket_name,
+            result.object_name,
+            ("with version id " + result.version_id) if result.version_id else ""
+        ))
 
     except S3Error as err:
         print("Error on writing object: \n\t{0}".format(err))

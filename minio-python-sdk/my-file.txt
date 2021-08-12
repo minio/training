@@ -1,1 +1,4 @@
-foobar-python 1
+v1: Use this file to test versioning.
+
+PUT the object, then change the contents
+and increment `v1`.

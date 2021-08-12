@@ -23,7 +23,7 @@ def main():
 
     # Populate the core requirements for fputobject:
 
-    bucket_name = args.bucket if args.bucket else "training"
+    bucket_name = args.bucket or "training"
 
     # We may need to change this webhook ARN depending on what MinIO lists as the available ARN
     # - MinIO Server outputs all configured ARNs on startup
