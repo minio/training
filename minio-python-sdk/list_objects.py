@@ -49,7 +49,7 @@ def main():
             )
 
     except S3Error as err:
-        print("error")
+        print("Error on writing object: \n\t{0}".format(err))
 
 
 if __name__ == '__main__':
