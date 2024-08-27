@@ -1,0 +1,18 @@
+# Starts a docker container running a minio server instance.
+# Four virtual volumes are shown.
+# Do not do this in production!
+services:
+  minio1:
+    image: quay.io/minio/minio
+    command: server --console-address ":9090" /data{1...4}
+    ports:
+      - "9050:9000"
+      - "9051:9090"
+    container_name: minio1
+    environment:
+      MINIO_STORAGE_CLASS_STANDARD: "EC:1"
+    volumes:
+      - /tmp/data/minio1:/data1
+      - /tmp/data/minio2:/data2
+      - /tmp/data/minio3:/data3
+      - /tmp/data/minio4:/data4

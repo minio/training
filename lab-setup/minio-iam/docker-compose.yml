@@ -1,0 +1,74 @@
+# Starts a docker container running a SNSD minio server instance.
+# Do not do this in production!
+services:
+  minio1:
+    image: quay.io/minio/minio
+    command: server --console-address ":9090" /data
+    ports:
+      - "9050:9000"
+      - "9051:9090"
+    container_name: minio1
+    volumes:
+      - /tmp/data/minio:/data
+
+  openldap:
+    image: osixia/openldap:1.5.0
+    container_name: openldap
+    environment:
+      LDAP_LOG_LEVEL: "256"
+      LDAP_ORGANISATION: "MinIO Training"
+      LDAP_DOMAIN: "minio.io"
+      LDAP_BASE_DN: "dc=minio,dc=io"
+      LDAP_ADMIN_PASSWORD: "anotherbadpass"
+      LDAP_CONFIG_PASSWORD: "config"
+      LDAP_READONLY_USER: "false"
+      #LDAP_READONLY_USER_USERNAME: "readonly"
+      #LDAP_READONLY_USER_PASSWORD: "readonly"
+      LDAP_RFC2307BIS_SCHEMA: "false"
+      LDAP_BACKEND: "mdb"
+      LDAP_TLS: "false"
+      #LDAP_TLS_CRT_FILENAME: "ldap.crt"
+      #LDAP_TLS_KEY_FILENAME: "ldap.key"
+      #LDAP_TLS_DH_PARAM_FILENAME: "dhparam.pem"
+      #LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
+      LDAP_TLS_ENFORCE: "false"
+      #LDAP_TLS_CIPHER_SUITE: "SECURE256:-VERS-SSL3.0"
+      #LDAP_TLS_VERIFY_CLIENT: "demand"
+      LDAP_REPLICATION: "false"
+      #LDAP_REPLICATION_CONFIG_SYNCPROV: 'binddn="cn=admin,cn=config" bindmethod=simple credentials="$$LDAP_CONFIG_PASSWORD" searchbase="cn=config" type=refreshAndPersist retry="60 +" timeout=1 starttls=critical'
+      #LDAP_REPLICATION_DB_SYNCPROV: 'binddn="cn=admin,$$LDAP_BASE_DN" bindmethod=simple credentials="$$LDAP_ADMIN_PASSWORD" searchbase="$$LDAP_BASE_DN" type=refreshAndPersist interval=00:00:00:10 retry="60 +" timeout=1 starttls=critical'
+      #LDAP_REPLICATION_HOSTS: "#PYTHON2BASH:['ldap://ldap.example.org','ldap://ldap2.example.org']"
+      KEEP_EXISTING_CONFIG: "false"
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
+      LDAP_SSL_HELPER_PREFIX: "ldap"
+      LDAP_SEED_INTERNAL_LDIF_PATH: "/openldap/ldif"
+      LDAP_PORT: 1389 
+      LDAPS_PORT: 1636
+    tty: true
+    stdin_open: true
+    volumes:
+      # - /var/lib/ldap
+      # - /etc/ldap/slapd.d
+      # - /container/service/slapd/assets/certs/
+      - /tmp/data/bootstrap.ldif:/openldap/ldif/bootstrap.ldif
+    ports:
+      - "1389:1389"
+      - "1636:1636"
+    # For replication to work correctly, domainname and hostname must be
+    # set correctly so that "hostname"."domainname" equates to the
+    # fully-qualified domain name for the host.
+    domainname: "ldap"
+    hostname: "ldap"
+    # command: "--loglevel debug"
+
+  key:
+    image: quay.io/keycloak/keycloak:latest
+    ports:
+      - "8080:8080"
+    container_name: "key"
+    volumes:
+      - /tmp/data/realm-minio.json:/opt/keycloak/data/import/realm-minio.json
+    environment:
+      - KEYCLOAK_ADMIN=key
+      - KEYCLOAK_ADMIN_PASSWORD=thisisabadpass
+    command: start-dev --import-realm

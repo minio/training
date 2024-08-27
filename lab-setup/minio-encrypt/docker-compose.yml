@@ -1,0 +1,18 @@
+# Starts a docker container running a minio server instance.
+# Do not do this in production!
+services:
+  minio1:
+    image: quay.io/minio/minio
+    command: server --console-address ":9090" /data
+    ports:
+      - "9050:9000"
+      - "9051:9090"
+    container_name: minio1
+    environment:
+      MINIO_KMS_KES_ENDPOINT: "https://play.min.io:7373"
+      MINIO_KMS_KES_KEY_FILE: "/keys/root.key"
+      MINIO_KMS_KES_CERT_FILE: "/keys/root.cert"
+      MINIO_KMS_KES_KEY_NAME: "ytrozs"
+    volumes:
+      - /tmp/data/minio1:/data
+      - /tmp/data/keys:/keys

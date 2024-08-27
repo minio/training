@@ -1,0 +1,54 @@
+# Settings and configurations that are common for all containers
+x-minio-common: &minio-common
+  image: quay.io/minio/minio
+  command: server --console-address ":9090" /data
+  expose:
+    - "9000"
+    - "9090"
+  environment:
+    MINIO_ROOT_USER: "minioadmin"
+    MINIO_ROOT_PASSWORD: "minioadmin"
+
+# Starts a docker container running a minio server instance.
+# Four virtual volumes are shown.
+# Do not do this in production!
+services:
+  minio1:
+    <<: *minio-common
+    ports:
+      - "9050:9000"
+      - "9051:9090"
+    container_name: minio1
+    hostname: minio1
+    volumes:
+      - /tmp/data/minio1:/data
+
+  minio2:
+    <<: *minio-common
+    ports:
+      - "9052:9000"
+      - "9053:9090"
+    container_name: minio2
+    hostname: minio2
+    volumes:
+      - /tmp/data/minio2:/data
+
+  minio3:
+    <<: *minio-common
+    ports:
+      - "9054:9000"
+      - "9055:9090"
+    container_name: minio3
+    hostname: minio3
+    volumes:
+      - /tmp/data/minio3:/data
+
+  minio4:
+    <<: *minio-common
+    ports:
+      - "9056:9000"
+      - "9057:9090"
+    container_name: minio4
+    hostname: minio4
+    volumes:
+      - /tmp/data/minio4:/data

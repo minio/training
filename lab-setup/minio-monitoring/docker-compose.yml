@@ -1,0 +1,25 @@
+# Starts a docker container running a minio server instance.
+# Four virtual volumes are shown.
+# Do not do this in production!
+services:
+  minio1:
+    image: quay.io/minio/minio
+    command: server --console-address ":9090" /data
+    ports:
+      - "9050:9000"
+      - "9051:9090"
+    environment:
+      MINIO_PROMETHEUS_URL: "http://prom:9090"
+      MINIO_PROMETHEUS_JOB_ID: "minio-job"
+    container_name: minio1
+    volumes:
+      - /tmp/data/minio:/data
+
+  prom:
+    image: quay.io/prometheus/prometheus
+    container_name: prom
+    command: "--config.file=/etc/prometheus/prometheus.yml"
+    volumes:
+      - /tmp/config:/etc/prometheus
+    ports:
+      - "9070:9090"
